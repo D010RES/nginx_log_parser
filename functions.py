@@ -87,7 +87,7 @@ def request_time_value_exceed_n(n):
         sqlite_connection = sqlite3.connect(DATABASE_NAME)
         cursor = sqlite_connection.cursor()
         statement = '''SELECT ID, request, request_time, upstream_response_time  FROM logs '''
-        cursor.execute(statement)
+        cursor.execute(statement, )
         output = cursor.fetchall()
         for item in output:
             try:
@@ -114,3 +114,30 @@ def request_time_value_exceed_n(n):
     header_list = ['ID', 'request', 'request_time', 'upstream_response_time']
     logs_df.to_csv(file_name, index=False, header=header_list, na_rep='N/A', index_label='ID')
     print(colored("process finished successfully.", 'green'))
+
+
+def get_by_status(status_code):
+    print(status_code)
+    sqlite_connection = None
+    try:
+        sqlite_connection = sqlite3.connect(DATABASE_NAME)
+        cursor = sqlite_connection.cursor()
+        statement = '''SELECT ID, request, request_time, upstream_response_time, client, status  FROM logs WHERE status == ?'''
+        cursor.execute(statement, (status_code,))
+        output = cursor.fetchall()
+        log_entries = output
+        logs_df = pd.DataFrame(log_entries)
+        file_name = f"request_with_status_{status_code}_{"{:%Y_%m_%d_%H_%M_%S}".format(datetime.now())}.csv"
+        header_list = ['ID', 'request', 'request_time', 'upstream_response_time', 'client', 'status']
+        logs_df.to_csv(file_name, index=False, header=header_list, na_rep='N/A', index_label='ID')
+        print(colored("process finished successfully.", 'green'))
+    except sqlite3.Error as error:
+        print(colored("Error while connecting to sqlite", 'red'), error)
+    except PermissionError as error:
+        print(colored("Permission DENIED error while opening file, close file if exists and is open", 'red'))
+    except:
+        print(colored("Unexpected error", 'red'))
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("The SQLite connection is closed.")

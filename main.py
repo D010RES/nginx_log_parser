@@ -10,10 +10,8 @@ if __name__ == '__main__':
     while True:
         command_r = input(
             "choose operation to run: \n a) parse nginx log file to sqlite3 database \n b) find all "
-            "records with specified route url \n c) read variance request_times and response_times  \n d) generate "
-            "database \n"
-            "e) restart \n n) find requests from one value to the next as <<request_time starts from n=1.0 to=end>> "
-            "\n o)"
+            "records with specified route url \n c) read variance request_times and response_times  \n d) generate database \n "
+            "e) restart \n n) find requests from one value to the next as <<ex. request_time starts from n=1.0 to=end>> \n s) find with specific status code \n o)"
             "exit \n ===> ")
 
         if command_r == 'a':
@@ -44,6 +42,16 @@ if __name__ == '__main__':
 
             if confirm == '1':
                 request_time_value_exceed_n(n_val)
+
+        elif command_r == 's':
+            status_code = input("enter status code ===> ")
+            while status_code == "":
+                print(colored("CAN NOT SEARCH FOR NONE ! ENTER MINIMUM VALUE FOR <<request_time>> PLEASE.", 'red'))
+                status_code = input("enter request_time lower bound wanna start to the end ===> ")
+            confirm = input("Sure to continue generating report ? yes: 1 / no: 2 ===> ")
+
+            if confirm == '1':
+                get_by_status(status_code)
 
         elif command_r == 'r':
             continue
